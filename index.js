@@ -1,9 +1,19 @@
-const express = require('express')
-const app = express()
-const port = 5000
+const express = require('express');
+const app = express();
+const port = 5000;
+
+const bodyParser = require('body-parser');
+const { User } = require('./models/User');
+
+// 환경변수에따라 다른값이 담긴다.
+const config = require('./config/key');
+
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
 
 const mongoose = require('mongoose');
-mongoose.connect('mongodb+srv://seungwon:01045063482@boilerplate.xj8lo.mongodb.net/boilerplate?retryWrites=true&w=majority', {
+mongoose.connect(config.mongoURI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useFindAndModify: false,
@@ -11,9 +21,20 @@ mongoose.connect('mongodb+srv://seungwon:01045063482@boilerplate.xj8lo.mongodb.n
 }).then(() => { console.log('MongoDB Connected...') })
     .catch(error => console.log(error))
 
-app.get('/', (req, res) => {
-    res.send('Hello World!')
+app.post('/register', (req, res) => {
+    //회원 가입할 때 필요한 정보들을 client에서 가져오면 
+    //그것들을 데이터 베이스에 넣어준다.
+
+    const user = new User(req.body);
+
+    user.save((err, userInfo) => {
+        if (err) return res.json({ success: false, err })// 실패시
+        return res.status(200).json({// 성공시
+            success: true
+        })
+    });
 })
+
 
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`)
