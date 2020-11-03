@@ -66,11 +66,12 @@ app.post('/api/users/login', (req, res) => {
     })
 })
 
+// 0 이면 일반유저 0 이 아니면 관리자
 app.get('/api/users/auth', auth, (req, res) => {
     //여기 까지 미들웨어를 통과해 왔다는 얘기는 Authentication 이 true 라는 말.
     res.status(200).json({
         _id: req.user._id,
-        isAdmin: req.user.role === 0 ? false : true, // 0 이면 일반유저 0 이 아니면 관리자
+        isAdmin: req.user.role === 0 ? false : true,
         isAuth: true,
         email: req.user.email,
         name: req.user.name,
@@ -80,6 +81,17 @@ app.get('/api/users/auth', auth, (req, res) => {
     })
 })
 
+app.get('/api/users/logout', auth, (req, res) => {
+    User.findOneAndUpdate(
+        { _id: req.user._id },
+        { token: '' },
+        (err, user) => {
+            if (err) return res.json({ success: false, err });
+            return res.status(200).send({
+                success: true
+            })
+        })
+})
 
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`)
