@@ -66,6 +66,14 @@ app.post('/api/users/login', (req, res) => {
     })
 })
 
+
+app.get('/api/loginSuccess', (req, res) => {
+    res.send('login success !!!');
+})
+
+
+
+
 // 0 이면 일반유저 0 이 아니면 관리자
 app.get('/api/users/auth', auth, (req, res) => {
     //여기 까지 미들웨어를 통과해 왔다는 얘기는 Authentication 이 true 라는 말.
